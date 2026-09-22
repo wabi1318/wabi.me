@@ -1,0 +1,7 @@
+export { HomePage } from './HomePage'
+export { AboutPage } from './AboutPage'
+export { BlogPage } from './BlogPage'
+export { BlogPostPage } from './BlogPostPage'
+export { WorksPage } from './WorksPage'
+export { TalksPage } from './TalksPage'
+export { NotFoundPage } from './NotFoundPage'
