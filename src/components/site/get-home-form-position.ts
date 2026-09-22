@@ -10,6 +10,11 @@ type Size = {
   height: number
 }
 
+export type FormPosition = {
+  left: number
+  top: number
+}
+
 const VIEWPORT_MARGIN = 12
 const HOME_HORIZONTAL_OFFSET = 48
 const HOME_VERTICAL_OFFSET = 56
@@ -33,9 +38,13 @@ export function getHomeFormPosition(home: HomeBounds, form: Size, viewport: Size
     ? home.top + verticalOffset
     : home.bottom - form.height + verticalOffset
 
-  // HOMEから少しずらし、閉じるボタンを含むフォーム全体が画面内に収まる位置にする。
+  return keepHomeFormInViewport({ left, top }, form, viewport)
+}
+
+// 閉じるボタンを含むフォーム全体が画面内に収まる位置にする。
+export function keepHomeFormInViewport(position: FormPosition, form: Size, viewport: Size): FormPosition {
   return {
-    left: Math.max(VIEWPORT_MARGIN, Math.min(left, viewport.width - form.width - VIEWPORT_MARGIN)),
-    top: Math.max(VIEWPORT_MARGIN, Math.min(top, viewport.height - form.height - VIEWPORT_MARGIN)),
+    left: Math.max(VIEWPORT_MARGIN, Math.min(position.left, viewport.width - form.width - VIEWPORT_MARGIN)),
+    top: Math.max(VIEWPORT_MARGIN, Math.min(position.top, viewport.height - form.height - VIEWPORT_MARGIN)),
   }
 }

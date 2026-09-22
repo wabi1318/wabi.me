@@ -1,15 +1,18 @@
-import type { PropsWithChildren, Ref } from 'react'
+import type { HTMLAttributes, PropsWithChildren, Ref } from 'react'
 
 type WindowProps = PropsWithChildren<{
   title: string
   onClose?: () => void
   windowRef?: Ref<HTMLElement>
+  titleBarProps?: Pick<HTMLAttributes<HTMLElement>,
+    'onPointerDown' | 'onPointerMove' | 'onPointerUp' | 'onPointerCancel' | 'onLostPointerCapture'
+  >
 }>
 
-export function Window({ title, children, onClose, windowRef }: WindowProps) {
+export function Window({ title, children, onClose, windowRef, titleBarProps }: WindowProps) {
   return (
     <section className="legacy-window" aria-label={title} ref={windowRef}>
-      <header className="title-bar">
+      <header className="title-bar" {...titleBarProps}>
         <span>{title}</span>
         <button type="button" className="window-control" aria-label={`${title}を閉じる`} disabled={!onClose} onClick={onClose}>
           <svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" focusable="false">

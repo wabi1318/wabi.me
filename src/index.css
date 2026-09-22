@@ -54,7 +54,8 @@ a { color: #0000aa; }
 button.legacy-button { font: inherit; cursor: pointer; }
 button.legacy-button:disabled { color: #808080; cursor: default; }
 .home-form { position: fixed; width: min(560px, calc(100% - 24px)); }
-.home-form .title-bar { gap: 12px; }
+.home-form .title-bar { gap: 12px; cursor: grab; touch-action: none; user-select: none; }
+.home-form .title-bar:active { cursor: grabbing; }
 .home-form .title-bar > span { min-width: 0; overflow-wrap: anywhere; }
 .home-form-content { padding: 20px; background: #f5f5f5; max-height: calc(65dvh - 70px); overflow: auto; overflow-wrap: anywhere; }
 .home-form:focus-visible { outline: 2px dotted white; outline-offset: 4px; }
