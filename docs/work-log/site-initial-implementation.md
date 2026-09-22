@@ -8,7 +8,8 @@
 ## 現状
 
 - 確認済み: GitHub公開リポジトリは`wabi1318/wabi.me`。pnpmのロックファイルを生成した。サイト構成変更後はTypeScript検査と一時出力先へのViteビルドに成功した。
-- `feature/initial-site`の実装コミット`31b9940`まで同名リモートブランチへpush済み。upstreamは`origin/feature/initial-site`。比較元の`main`はGitHubに未作成で、PRはまだ作成していない。
+- `feature/initial-site`の実装コミット`31b9940`まで同名リモートブランチへpush済み。upstreamは`origin/feature/initial-site`。ユーザーが比較元の`main`を作成し、GitHubのデフォルトブランチを`main`へ変更済み。
+- PR #1「VB6風の個人サイトを追加する」を作成した: https://github.com/wabi1318/wabi.me/pull/1 。比較元は`main`、実装ブランチは`feature/initial-site`。ブラウザの動作確認項目は未確認として記載している。
 - 仮定: React、TypeScript、Viteを採用し、プロフィール本文と作品データは公開前に差し替えるプレースホルダーとする。
 
 ## 完了した実装と検証
@@ -35,10 +36,7 @@
 ## 次の作業
 
 - 次の1手: 手元のブラウザで、背面フォームのタイトルバーからのドラッグ、枠外までの移動、ボタンを離した後の停止、前面化・スクロール後の位置保持、閉じる操作を確認する。
-- 初回PRの比較元を作るため、ユーザー端末で`git push origin main:main`を実行する。ローカル`main`は空の初期コミット`1bb5dd7`のみを持つ。共有基幹ブランチへの直接pushはAGENTS.mdで禁止されているため、Codexでは実行しない。
-- 最初に公開した`feature/initial-site`がGitHubのデフォルトブランチになっている。`main`作成後は`gh repo edit wabi1318/wabi.me --default-branch main`でデフォルトブランチを変更する。
-- PR本文は`/private/tmp/wabi-me-pr.7xQ1F0/body.md`へ準備済み。`main`作成後に比較元を確認し、`gh pr create --repo wabi1318/wabi.me --base main --head feature/initial-site --title 'VB6風の個人サイトを追加する' --body-file /private/tmp/wabi-me-pr.7xQ1F0/body.md`を実行する。レビュアー指定はなし。
-- PR案: 「VB6風の個人サイトを追加する」。実データへの差し替え、ブラウザ動作確認、公開設定は未完了。Markdown本文の表示は段落と第2階層見出しのみ対応する。
+- PR #1の動作確認項目を手元で確認する。実データへの差し替えと公開設定は未完了。Markdown本文の表示は段落と第2階層見出しのみ対応する。
 
 - `src/content/profile.ts`、`src/content/works.ts`、`src/content/talks.ts`と`src/content/blog/`のプレースホルダーを実データへ置き換える。
 - GitHubPagesなど公開先を決め、SPAの直接URLアクセスに対応する設定を追加する。
