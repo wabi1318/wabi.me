@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { SiteLayout } from '../components/site/SiteLayout'
 import { posts } from '../content/posts'
+import type { Post } from '../content/posts'
 
 function renderBlock(block: string, index: number) {
   if (block.startsWith('## ')) {
@@ -24,10 +25,18 @@ export function BlogPostPage() {
     <SiteLayout title={`wabi.me - ${post.title}`}>
       <article className="article-content">
         <Link className="back-link" to="/blog">← 記事一覧</Link>
-        <time dateTime={post.date}>{post.date}</time>
-        <h1 className="page-title">{post.title}</h1>
-        {post.body.split('\n\n').map(renderBlock)}
+        <BlogPostContent post={post} />
       </article>
     </SiteLayout>
+  )
+}
+
+export function BlogPostContent({ post }: { post: Post }) {
+  return (
+    <>
+      <time dateTime={post.date}>{post.date}</time>
+      <h1 className="page-title">{post.title}</h1>
+      {post.body.split('\n\n').map(renderBlock)}
+    </>
   )
 }

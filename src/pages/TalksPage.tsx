@@ -3,8 +3,12 @@ import { SiteLayout } from '../components/site/SiteLayout'
 import { talks } from '../content/talks'
 
 export function TalksPage() {
+  return <SiteLayout title="wabi.me - Talks"><TalksContent /></SiteLayout>
+}
+
+export function TalksContent() {
   return (
-    <SiteLayout title="wabi.me - Talks">
+    <>
       <PageTitle>登壇資料</PageTitle>
       <div className="talk-list">
         {talks.map((talk) => (
@@ -16,6 +20,6 @@ export function TalksPage() {
           </article>
         ))}
       </div>
-    </SiteLayout>
+    </>
   )
 }
