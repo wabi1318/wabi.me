@@ -15,7 +15,7 @@ a { color: #0000aa; }
 .site-menu { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-bottom: 1px solid #808080; background: #c0c0c0; }
 .site-menu .vb-button { min-width: 0; padding: 3px 6px; font-size: 0.85rem; text-decoration: none; }
 .site-menu [aria-current='page'] { font-weight: bold; }
-.home-form { position: fixed; width: min(640px, calc(100vw - 24px)); outline: none; }
+.home-form { position: fixed; width: min(640px, calc(100% - 24px)); outline: none; }
 .home-form .vb-window { display: flex; flex-direction: column; max-height: calc(100dvh - 24px); min-height: 0; }
 .home-form .vb-client-area { min-height: 0; overflow: auto; }
 .home-form .vb-titlebar, .home-form .vb-statusbar { flex-shrink: 0; }

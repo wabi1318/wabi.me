@@ -39,30 +39,32 @@ export function HomeWorkspace({ posts, profile, about, works, talks }: {
   talks?: ReactNode
 }) {
   const [forms, setForms] = useState<readonly OpenForm[]>([])
+  // 選択中の要素を移動させないため、重なり順はフォームの並びと分けて持つ。
+  const [formStack, setFormStack] = useState<readonly string[]>([])
   const homeRef = useRef<HTMLElement>(null)
   const triggers = useRef(new Map<string, HTMLElement>())
 
   function activateForm(id: string) {
-    setForms((current) => {
-      if (current.at(-1)?.id === id) return current
-      const target = current.find((form) => form.id === id)
-      return target ? [...current.filter((form) => form.id !== id), target] : current
+    setFormStack((current) => {
+      if (current.at(-1) === id || !current.includes(id)) return current
+      return [...current.filter((candidate) => candidate !== id), id]
     })
   }
 
   function openForm(id: string, title: string, content: ReactNode) {
     if (document.activeElement instanceof HTMLElement) triggers.current.set(id, document.activeElement)
     setForms((current) => {
-      const existing = current.find((form) => form.id === id)
+      if (current.some((form) => form.id === id)) return current
       let placementIndex = 0
       while (current.some((form) => form.placementIndex === placementIndex)) placementIndex += 1
-      const form = existing ?? { id, title, content, placementIndex }
-      return [...current.filter((candidate) => candidate.id !== id), form]
+      return [...current, { id, title, content, placementIndex }]
     })
+    setFormStack((current) => [...current.filter((candidate) => candidate !== id), id])
   }
 
   function closeForm(id: string) {
     setForms((current) => current.filter((form) => form.id !== id))
+    setFormStack((current) => current.filter((candidate) => candidate !== id))
     triggers.current.get(id)?.focus()
     triggers.current.delete(id)
   }
@@ -107,9 +109,9 @@ export function HomeWorkspace({ posts, profile, about, works, talks }: {
           </div>
         </div>
       </VBWindow>
-      {forms.map((form, index) => (
+      {forms.map((form) => (
         <HomeForm key={form.id} title={form.title} homeRef={homeRef} placementIndex={form.placementIndex}
-          layer={index + 1} onClose={() => closeForm(form.id)} onActivate={() => activateForm(form.id)}>
+          layer={formStack.indexOf(form.id) + 1} onClose={() => closeForm(form.id)} onActivate={() => activateForm(form.id)}>
           {form.content}
         </HomeForm>
       ))}

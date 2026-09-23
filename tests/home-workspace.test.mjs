@@ -46,7 +46,8 @@ async function mountWorkspace(context) {
 
 async function click(element) {
   assert.ok(element)
-  await act(async () => { element.focus(); element.click() })
+  await act(async () => element.focus())
+  await act(async () => element.click())
 }
 
 async function pointer(element, type, coordinates = {}) {
@@ -83,6 +84,68 @@ test('HOME remains open while child pages and articles open, reuse, activate and
   for (const close of [...document.querySelectorAll('.home-form .vb-window-close')]) await click(close)
   assert.equal(document.querySelectorAll('.home-form').length, 0)
   assert.ok(home.isConnected)
+})
+
+test('focusing a background form keeps the selected link and DOM order', async (context) => {
+  await mountWorkspace(context)
+  const home = document.querySelector('.vb-window')
+  await click(home.querySelector('a[href="/blog"]'))
+  const blog = document.querySelector('.home-form[aria-label="記事一覧"]')
+  await click(home.querySelector('a[href="/works"]'))
+  const openedForms = [...document.querySelectorAll('.home-form')].map(form => form.getAttribute('aria-label'))
+  const link = blog.querySelector('a[href="/blog/example"]')
+
+  await act(async () => link.focus())
+
+  assert.equal(document.activeElement, link)
+  assert.deepEqual([...document.querySelectorAll('.home-form')].map(form => form.getAttribute('aria-label')), openedForms)
+  assert.equal(document.querySelector('.home-form[aria-label="記事一覧"]'), blog)
+  assert.equal(blog.style.zIndex, '2')
+})
+
+test('closing an article restores focus to its background form without reordering it', async (context) => {
+  await mountWorkspace(context)
+  const home = document.querySelector('.vb-window')
+  await click(home.querySelector('a[href="/blog"]'))
+  const blog = document.querySelector('.home-form[aria-label="記事一覧"]')
+  const articleTrigger = blog.querySelector('a[href="/blog/example"]')
+  await click(articleTrigger)
+  const article = document.querySelector('.home-form[aria-label="記事の本文"]')
+  await click(home.querySelector('a[href="/works"]'))
+
+  await click(article.querySelector('.vb-window-close'))
+
+  assert.equal(document.activeElement, articleTrigger)
+  assert.equal(article.isConnected, false)
+  assert.equal(document.querySelector('.home-form'), blog)
+  assert.equal(blog.style.zIndex, '2')
+  assert.equal(document.querySelectorAll('.home-form').length, 2)
+})
+
+test('reusing and reopening a form keep DOM order and stacking order independent', async (context) => {
+  await mountWorkspace(context)
+  const home = document.querySelector('.vb-window')
+  const blogTrigger = home.querySelector('a[href="/blog"]')
+  await click(blogTrigger)
+  const blog = document.querySelector('.home-form[aria-label="記事一覧"]')
+  await click(home.querySelector('a[href="/works"]'))
+  const works = document.querySelector('.home-form[aria-label="制作物一覧"]')
+
+  await click(blogTrigger)
+
+  assert.equal(document.querySelector('.home-form'), blog)
+  assert.equal(document.querySelectorAll('.home-form').length, 2)
+  assert.equal(blog.style.zIndex, '2')
+  assert.equal(works.style.zIndex, '1')
+
+  await click(blog.querySelector('.vb-window-close'))
+  await click(blogTrigger)
+
+  assert.equal(blog.isConnected, false)
+  assert.equal(document.querySelector('.home-form'), works)
+  assert.equal(works.style.zIndex, '1')
+  assert.equal(document.querySelector('.home-form[aria-label="記事一覧"]').style.zIndex, '2')
+  assert.equal(document.querySelectorAll('.home-form').length, 2)
 })
 
 test('titlebar dragging preserves position across activation and scroll, then clamps on resize', async (context) => {
@@ -198,4 +261,15 @@ test('placement calculations keep all four corners within small and large viewpo
       }
     }
   }
+})
+
+test('fixed form width uses the scrollbar-free containing block', (context) => {
+  const { window } = new JSDOM('<style></style>', { url: 'https://example.test/' })
+  context.after(() => window.close())
+  window.document.querySelector('style').textContent = readFileSync(new URL('../src/styles/site.css', import.meta.url), 'utf8')
+  const formRule = [...window.document.styleSheets[0].cssRules].find(rule => rule.selectorText === '.home-form')
+
+  assert.ok(formRule)
+  assert.equal(formRule.style.getPropertyValue('position'), 'fixed')
+  assert.equal(formRule.style.getPropertyValue('width'), 'min(640px, calc(100% - 24px))')
 })

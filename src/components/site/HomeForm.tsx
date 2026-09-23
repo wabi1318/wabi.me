@@ -1,6 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { PointerEvent, PropsWithChildren, RefObject } from 'react'
-import { flushSync } from 'react-dom'
 import { VBWindow } from '../vb'
 import { getHomeFormPosition, keepHomeFormInViewport } from './get-home-form-position'
 import type { FormPosition } from './get-home-form-position'
@@ -66,8 +65,7 @@ export function HomeForm({ title, homeRef, placementIndex, layer, onClose, onAct
     if (!formElement) return
 
     event.preventDefault()
-    // 前面化で要素の並びが変わるため、その反映後に移動操作を開始する。
-    flushSync(onActivate)
+    onActivate()
     formElement.focus({ preventScroll: true })
     const bounds = formElement.getBoundingClientRect()
     dragRef.current = {
