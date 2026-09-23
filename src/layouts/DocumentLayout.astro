@@ -1,0 +1,17 @@
+---
+import '../styles/site.css'
+
+interface Props { title: string; description?: string }
+const { title, description = 'wabiの個人サイト' } = Astro.props
+---
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon-vb6-character.png" type="image/png" />
+    <title>{title}</title>
+  </head>
+  <body><main class="site-shell"><slot /></main></body>
+</html>

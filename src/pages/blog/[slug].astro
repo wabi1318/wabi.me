@@ -1,0 +1,21 @@
+---
+import { render } from 'astro:content'
+import type { CollectionEntry } from 'astro:content'
+import SiteLayout from '../../layouts/SiteLayout.astro'
+import { getPosts } from '../../content/posts'
+
+export async function getStaticPaths() {
+  return (await getPosts()).map((post) => ({ params: { slug: post.id }, props: { post } }))
+}
+interface Props { post: CollectionEntry<'blog'> }
+const { post } = Astro.props
+const { Content } = await render(post)
+---
+<SiteLayout title={`wabi.me - ${post.data.title}`} description={post.data.summary}>
+  <article class="article-content">
+    <a class="back-link" href="/blog">← 記事一覧</a>
+    <time datetime={post.data.date.toISOString()}>{post.data.date.toISOString().slice(0, 10)}</time>
+    <h1 class="page-title">{post.data.title}</h1>
+    <Content />
+  </article>
+</SiteLayout>

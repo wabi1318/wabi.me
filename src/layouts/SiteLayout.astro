@@ -1,0 +1,14 @@
+---
+import DocumentLayout from './DocumentLayout.astro'
+import { VBWindow } from '../components/vb'
+import { SiteNavigation } from '../components/site'
+
+interface Props { title: string; description?: string }
+const { title, description } = Astro.props
+---
+<DocumentLayout title={title} description={description}>
+  <VBWindow title={title} status="wabi.me — Personal site" embedded>
+    <SiteNavigation currentPath={Astro.url.pathname} />
+    <div class="page-content"><slot /></div>
+  </VBWindow>
+</DocumentLayout>
