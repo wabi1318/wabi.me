@@ -19,7 +19,8 @@
 
 ## Changed files
 
-- Changed files: [".gitignore","docs/work-log/site-initial-implementation.md","index.html","package.json","pnpm-lock.yaml","src/App.tsx","src/components/legacy/Window.tsx","src/components/site/HomeForm.tsx","src/components/site/PageTitle.tsx","src/components/site/PostList.tsx","src/components/site/SiteLayout.tsx","src/components/site/WorkList.tsx","src/content/posts.ts","src/content/works.ts","src/index.css","src/main.tsx","src/pages/AboutPage.tsx","src/pages/BlogPage.tsx","src/pages/BlogPostPage.tsx","src/pages/HomePage.tsx","src/pages/NotFoundPage.tsx","src/pages/TalksPage.tsx","src/pages/WorksPage.tsx","src/pages/index.ts","tsconfig.app.json","tsconfig.json","tsconfig.node.json","vite.config.ts",".node-version","astro.config.mjs","public/licenses/legacy-react-form.txt","src/components/AboutContent.astro","src/components/PostList.astro","src/components/Profile.astro","src/components/TalksContent.astro","src/components/WorksContent.astro","src/components/site/HomeWorkspace.tsx","src/components/site/SiteNavigation.tsx","src/components/site/index.ts","src/components/vb/LICENSE","src/components/vb/VBButton.tsx","src/components/vb/VBMenuBar.tsx","src/components/vb/VBStatusBar.tsx","src/components/vb/VBTitleBar.tsx","src/components/vb/VBWindow.tsx","src/components/vb/index.ts","src/content.config.ts","src/layouts/DocumentLayout.astro","src/layouts/SiteLayout.astro","src/pages/404.astro","src/pages/about.astro","src/pages/blog/[slug].astro","src/pages/blog/index.astro","src/pages/index.astro","src/pages/talks.astro","src/pages/works.astro","src/styles/site.css","src/styles/vb.css","tests/home-workspace.test.mjs","tests/site-output.test.mjs"]
+- 結果記録時点の差分を示す。サイト実装の差分はe817c88へcommit・push済み。
+- Changed files: ["docs/work-log/site-initial-implementation.md"]
 
 ## Evidence
 
@@ -36,8 +37,11 @@
 
 ## Session
 
-- 作業先: /Users/kokoro036/work/wabi.me 。現在のbranch: feature/initial-site、upstream: origin/feature/initial-site。移行差分のcommit・pushを準備中。
+- 作業先: /Users/kokoro036/work/wabi.me 。現在のbranch: feature/initial-site、upstream: origin/feature/initial-site。
+- 実装commit: e817c88f1ced11524bf65472a79b982ef74f35ea「ページを静的生成し既存UIを再利用するためAstroへ移行する」。作者・コミッターはいずれもwabi。GitHubへのpushとPR #1への反映を確認済み。
 - PR #1: https://github.com/wabi1318/wabi.me/pull/1 。baseはmain、headはfeature/initial-site。更新前のremote commitは398c68e4b1add76696c21f329575908ba1e0a0e5。feature/astro-reactは同じ更新前commitを指すローカルブランチとして残す。
+- PR本文をユーザー承認済みのAstro構成の説明へ更新し、GitHub APIで本文の一致を確認した。base=main、タイトル「VB6風の個人サイトを追加する」、レビュアーなしを維持した。新規PRの作成・mergeは行っていない。
+- mainのremote commitは8339e4358326e6eb8807282acea7c1e45b847a1aのまま。既存履歴の書き換えは行っていない。CodeRabbitの状態は確認時点でPENDINGであり、レビュー完了とは扱わない。
 - 元リポジトリのnode_modules更新は権限昇格後も拒否されたため再試行しない。検証用コピー: /private/tmp/wabi-me-astro-react.uVuzfM 。
 - Node.js24.16.0、pnpm9.13.0を使用。Node22.15.0では依存関係の要求を満たさない。
 - 取り下げたWeb Components試作は /private/tmp/wabi-me-astro-validation.S39ser と /private/tmp/legacy-web-components.9Gd6aN/repo に保存している。GitHub fork wabi1318/legacy-web-componentsへ試作コードは未反映。
@@ -46,7 +50,7 @@
 
 ## Next step
 
-- 次の1手: 移行差分をcommitし、remote refを再確認してorigin/feature/initial-siteへpushする。PR本文を確認後、新構成に合わせて更新する。
+- 次の1手: ユーザー端末で起動し、PR #1の実ブラウザ確認を行う。この結果記録も同じブランチへcommit・pushし、実装commitのSHAとは区別する。
 - 公開先は既存のwabi1318/wabi.me。remote更新が競合した場合は停止し、force-pushやmainへのpushに切り替えない。復旧が必要なら追加commitで戻す。
 - 続いてユーザー端末で依存関係を更新し、HOMEの子フォーム操作と見た目を確認する。下記は /Users/kokoro036/work/wabi.me で実行する。
 
@@ -57,6 +61,5 @@ mise x node@24.16.0 -- corepack pnpm dev
 
 - 合格条件: HOMEの閉じるボタンが無効、各メニューから子フォームが開く、タイトルバーから移動できる、同じフォームは増殖せず前面に出る、子フォームだけ閉じられる。ABOUT・記事の直接URLも確認する。
 - Nodeの依存更新を無理に回避する設定は追加しない。元のnode_modules・distはこの実行環境から更新していないため、既存の出力を今回の実装結果として扱わない。
-- 提案コミットメッセージ: ページを静的生成し既存UIを再利用するためAstroへ移行する
 - 復旧は移行前のfeature/initial-siteとの比較から行い、未コミットの移行差分を確認なしに破棄しない。
 - 依存関係の再インストールと手元ブラウザ確認、公開先の決定は保留。
