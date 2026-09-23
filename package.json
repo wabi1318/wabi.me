@@ -4,21 +4,28 @@
   "version": "0.1.0",
   "type": "module",
   "packageManager": "pnpm@9.13.0",
+  "engines": { "node": ">=22.19.0" },
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "dev": "astro dev",
+    "check": "astro check",
+    "build": "astro build",
+    "test": "node --import tsx --test tests/*.test.mjs",
+    "preview": "astro preview"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "^5.0.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "react-router-dom": "^7.7.0"
+    "@astrojs/react": "^5.0.0",
+    "astro": "6.4.8",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
   },
   "devDependencies": {
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "typescript": "^5.8.3",
-    "vite": "^7.0.0"
+    "@astrojs/check": "^0.9.4",
+    "@tailwindcss/vite": "4.3.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "jsdom": "26.1.0",
+    "tailwindcss": "4.3.2",
+    "typescript": "5.9.3",
+    "tsx": "4.21.0"
   }
 }

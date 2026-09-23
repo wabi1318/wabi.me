@@ -8,8 +8,8 @@ export type Work = {
 export const works: readonly Work[] = [
   {
     title: 'このサイト',
-    description: 'ReactとTypeScriptでつくる、VB6風の個人ポータルです。',
-    tags: ['React', 'TypeScript', 'Vite'],
+    description: 'AstroとReact製のVB6風部品でつくる個人ポータルです。',
+    tags: ['Astro', 'React', 'Tailwind CSS', 'TypeScript'],
   },
   {
     title: '次の制作物',

@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { PointerEvent, PropsWithChildren, RefObject } from 'react'
 import { flushSync } from 'react-dom'
-import { Window } from '../legacy/Window'
+import { VBWindow } from '../vb'
 import { getHomeFormPosition, keepHomeFormInViewport } from './get-home-form-position'
 import type { FormPosition } from './get-home-form-position'
 
@@ -110,7 +110,8 @@ export function HomeForm({ title, homeRef, placementIndex, layer, onClose, onAct
       onPointerDown={onActivate}
       onFocusCapture={onActivate}
     >
-      <Window
+      <VBWindow
+        embedded
         title={title}
         onClose={onClose}
         titleBarProps={{
@@ -122,7 +123,7 @@ export function HomeForm({ title, homeRef, placementIndex, layer, onClose, onAct
         }}
       >
         <div className="home-form-content">{children}</div>
-      </Window>
+      </VBWindow>
     </div>
   )
 }

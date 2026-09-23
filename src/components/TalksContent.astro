@@ -1,0 +1,12 @@
+---
+import { talks } from '../content/talks'
+---
+<h1 class="page-title">登壇資料</h1>
+<div class="talk-list">
+  {talks.map((talk) => (
+    <article class="talk-card">
+      <p>{talk.date} / {talk.event}</p><h2>{talk.title}</h2><p>{talk.description}</p>
+      {talk.url && <a href={talk.url}>資料を見る</a>}
+    </article>
+  ))}
+</div>

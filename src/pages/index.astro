@@ -1,0 +1,32 @@
+---
+import type { MarkdownInstance } from 'astro'
+import DocumentLayout from '../layouts/DocumentLayout.astro'
+import { HomeWorkspace } from '../components/site'
+import Profile from '../components/Profile.astro'
+import AboutContent from '../components/AboutContent.astro'
+import WorksContent from '../components/WorksContent.astro'
+import TalksContent from '../components/TalksContent.astro'
+import { getPosts } from '../content/posts'
+
+const markdownFiles = import.meta.glob<MarkdownInstance<Record<string, unknown>>>('../content/blog/**/*.md')
+const posts = await Promise.all((await getPosts()).map(async (post) => {
+  const loadMarkdown = markdownFiles['../content/blog/' + post.id + '.md']
+  if (!loadMarkdown) throw new Error('記事のMarkdownが見つかりません: ' + post.id)
+  const markdown = await loadMarkdown()
+  return {
+    slug: post.id,
+    title: post.data.title,
+    date: post.data.date.toISOString().slice(0, 10),
+    summary: post.data.summary,
+    html: await markdown.compiledContent(),
+  }
+}))
+---
+<DocumentLayout title="wabi.me">
+  <HomeWorkspace posts={posts} client:load>
+    <Profile slot="profile" />
+    <AboutContent slot="about" />
+    <WorksContent slot="works" />
+    <TalksContent slot="talks" />
+  </HomeWorkspace>
+</DocumentLayout>

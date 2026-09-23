@@ -1,0 +1,14 @@
+---
+import { works } from '../content/works'
+---
+<h1 class="page-title">制作物一覧</h1>
+<div class="work-list">
+  {works.map((work) => (
+    <article class="work-card">
+      <h2>{work.title}</h2>
+      <p>{work.description}</p>
+      <ul aria-label={`${work.title}の技術`} class="tag-list">{work.tags.map((tag) => <li>{tag}</li>)}</ul>
+      {work.url && <a href={work.url}>開く</a>}
+    </article>
+  ))}
+</div>

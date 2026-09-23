@@ -1,51 +1,62 @@
-# wabi.me 初期実装
+# wabi.me サイト構成の移行
 
-## 目的と完了条件
+## Goal
 
-- VB6風の見た目を持つ個人サイトの土台を作る。
-- `/`、`/blog`、`/works`、`/talks`、`/about`をブラウザで表示でき、`pnpm build`が通る。
+- ページとMarkdown記事をAstroで静的生成し、VB6風UIには元のReact＋Tailwind CSS部品を使用する。
+- 既存の8ページ、プロフィール画像、HOMEを残す子フォームの開閉・前面化・ドラッグを維持する。
+- 完了条件: 型検査、静的ビルド、HOME操作の自動テストを通す。実ブラウザの見た目は別途確認する。
 
-## 現状
+## Decisions
 
-- ローカル`main`と`feature/initial-site`の既存6コミットを修正し、作者とコミッターを`wabi <118988588+wabi1318@users.noreply.github.com>`へ統一した。全コミットのファイル内容・メッセージ・日時と、対応する親子関係が維持されたことを検証済み。
-- 修正後の初期コミットは`8339e4358326e6eb8807282acea7c1e45b847a1a`、修正後の既存実装履歴の先端は`93adc63f2b57e79fe7259c9ef58104a8a4ae5cd9`。この記録はその後続の追加コミットとする。
-- 修正前の復旧用bundleは`.git/identity-backup.RUm65W/before.bundle`に保存済み（Git管理外・非公開）。ローカルの旧履歴はbundleから別名ブランチへ取り出せる。
-- 今後のコミット用の`wabi.me`ローカル設定は`wabi`と上記メールへ変更済み。`git var GIT_AUTHOR_IDENT`と`GIT_COMMITTER_IDENT`でも確認した。
-- ユーザーが実行スクリプトを完了した。`work`配下の既存12リポジトリ＋1追加worktreeで、実効的な作者・コミッターが`wabi`であることを再確認した。`~/.gitconfig`の条件付きincludeで`/Users/kokoro036/work/.gitconfig-wabi`を読み込むため、新規リポジトリにも同じ設定が継承される。個別のuser設定を持たない検証用リポジトリでも確認済み。
-- ユーザーによる両ブランチ同時の履歴反映が成功した。GitHub APIで`main`と`feature/initial-site`の全コミットが作者・コミッターともに`wabi1318`へ紐付くことを確認した。旧履歴を持つ別コピーがある場合は通常のmergeで取り込まない。
-- 確認済み: GitHub公開リポジトリは`wabi1318/wabi.me`。pnpmのロックファイルを生成した。サイト構成変更後はTypeScript検査と一時出力先へのViteビルドに成功した。
-- リモートの履歴反映時点で`feature/initial-site`は`7156de2`、`main`は`8339e43`。upstreamは`origin/feature/initial-site`。GitHubのデフォルトブランチは`main`。
-- PR #1「VB6風の個人サイトを追加する」を作成した: https://github.com/wabi1318/wabi.me/pull/1 。比較元は`main`、実装ブランチは`feature/initial-site`。ブラウザの動作確認項目は未確認として記載している。
-- PR #1はOPENを維持し、base/headともに書き換え後の履歴へ更新された。PR内コミットも作者・コミッターがすべて`wabi1318`になったことをGitHub APIで確認済み。
-- 仮定: React、TypeScript、Viteを採用し、プロフィール本文と作品データは公開前に差し替えるプレースホルダーとする。
+- 2026-09-23: ユーザーがAstro＋元のReact/Tailwind構成を選択。Widely available限定と素のWeb Components移植は取り下げる。
+- HOMEだけを1つのReactコンポーネントとして起動する。その他のページのReact部品はビルド時にHTML化する。
+- ABOUT・WORKS・TALKSの本文はAstroで共用し、HOMEには名前付きの差し込み領域として渡す。
+- 記事本文はローカルMarkdownをAstroで変換したHTMLだけを渡す。外部から渡されたHTMLは扱わない。
+- 元部品: https://github.com/murasuke/legacy-react-form/tree/26550c760915aaf71f5b0792ac21c521062364ac 。必要な5部品とCSSを取り込み、MITライセンスをsrc/components/vb/LICENSEに残す。
+- 元部品への拡張は埋め込み表示、閉じるボタン、ドラッグ用の入力イベント。配置と状態はサイト側が持つ。
+- 新しいforkへの移植、パッケージ公開、サイトのデプロイは行わない。既存のプロフィールと記事はサンプルのまま。
+- 2026-09-23: ユーザーがcommit・push・PR作成を依頼した後、既存PR #1への追加を選択した。新規PRは作らず、feature/initial-siteへ移行差分を反映する。mainへの直接pushは行わない。
 
-## 完了した実装と検証
+## Changed files
 
-- `/`、`/profile`、`/works`、`/links`、未定義URL用の404画面を追加した。
-- `components/legacy`にVB6風ウィンドウ、`components/site`にサイト共通部品を配置した。
-- `content/`へプロフィール、作品、リンクの編集対象データを分離した。
-- `BLOG`、`TALKS`、`ABOUT`を追加し、`PROFILE`と`LINKS`を置き換えた。記事は`src/content/blog/`のMarkdownで管理する。
-- pnpmへ切り替え、`pnpm-lock.yaml`を生成した。`package-lock.json`は削除した。
-- サイト構成変更前の`pnpm build`は成功。変更後のTypeScript検査と一時出力先へのViteビルドも成功した。通常の`dist/`出力はCodex実行環境から削除できず、未再確認。
-- Viteの開発用依存関係キャッシュを`.vite-cache/`へ変更した。Codex実行環境ではキャッシュ更新時に権限エラーとなるため、ユーザー端末でキャッシュを削除して`pnpm dev`を実行する必要がある。
-- `public/favicon.svg`へVB6風の小窓アイコンを追加し、`index.html`から参照するようにした。
-- 生成したVB6風キャラクター画像を`public/favicon-vb6-character.png`へ追加し、faviconとして参照するようにした。既存のSVG faviconは代替案として残す。
-- 同じキャラクター画像をトップと`ABOUT`のプロフィール画像として表示するようにした。
-- HOMEを親画面として維持し、HOME内のボタンから子フォームを開く。HOMEの実際の位置を基準に、右上・左下・右下・左上へ少しずらして配置する。画面端では全体が収まる位置へ調整し、画面サイズやHOMEの位置の変化にも追従する。
-- 子フォームのタイトルバーをマウス・タッチでドラッグして移動する処理を追加した。移動後はHOMEへの追従を止め、そのフォームを閉じるまで手動位置を保持する。画面サイズ変更時には画面内に収まる位置へ調整する。HOME自体は固定する。
-- 閉じるボタンからは移動を開始しない。ドラッグ中にタイトルバーの外へ移動しても追従し、指・ボタンを離す／操作が中断されると移動を終了する。前面化による要素の並べ替えが完了してから移動を開始する。
-- 既存フォームの再選択は位置を変えずに前面化し、子フォームだけ閉じられる。配置番号は表示順と分離し、閉じたフォームの番号を再利用する。狭い画面では画面内に収めるためフォーム同士の重なりを許容する。直接URLのページ表示も維持する。
-- 閉じる記号を中央配置の10px SVGへ変更した。HOMEを含む単独ページの閉じるボタンは無効、子フォームでは有効にする。
-- HOME基準の配置へ変更後、TypeScript検査とViteビルド（`/private/tmp/wabi-me-home-around.JzuLV6`）が成功。配置計算では四隅への分散、HOME移動への追従、画面幅・高さ・スクロール位置を変えた864通りの画面内配置を確認した。
-- ドラッグ処理追加後のTypeScript検査、`git diff --check`、Viteビルド（`/private/tmp/wabi-me-form-drag.ZxsdwV`）が成功。手動位置を再計算しても変わらないこと、画面縮小時の補正、画面寸法と移動先を変えた1,176通りの境界計算を確認した。実際のドラッグ開始・終了・中断はブラウザ未検証。
-- ブラウザによる開閉・前面化・見た目の確認は未実施（このセッションではローカルURLへのブラウザ操作が管理ポリシーで禁止）。
+- Changed files: [".gitignore","docs/work-log/site-initial-implementation.md","index.html","package.json","pnpm-lock.yaml","src/App.tsx","src/components/legacy/Window.tsx","src/components/site/HomeForm.tsx","src/components/site/PageTitle.tsx","src/components/site/PostList.tsx","src/components/site/SiteLayout.tsx","src/components/site/WorkList.tsx","src/content/posts.ts","src/content/works.ts","src/index.css","src/main.tsx","src/pages/AboutPage.tsx","src/pages/BlogPage.tsx","src/pages/BlogPostPage.tsx","src/pages/HomePage.tsx","src/pages/NotFoundPage.tsx","src/pages/TalksPage.tsx","src/pages/WorksPage.tsx","src/pages/index.ts","tsconfig.app.json","tsconfig.json","tsconfig.node.json","vite.config.ts",".node-version","astro.config.mjs","public/licenses/legacy-react-form.txt","src/components/AboutContent.astro","src/components/PostList.astro","src/components/Profile.astro","src/components/TalksContent.astro","src/components/WorksContent.astro","src/components/site/HomeWorkspace.tsx","src/components/site/SiteNavigation.tsx","src/components/site/index.ts","src/components/vb/LICENSE","src/components/vb/VBButton.tsx","src/components/vb/VBMenuBar.tsx","src/components/vb/VBStatusBar.tsx","src/components/vb/VBTitleBar.tsx","src/components/vb/VBWindow.tsx","src/components/vb/index.ts","src/content.config.ts","src/layouts/DocumentLayout.astro","src/layouts/SiteLayout.astro","src/pages/404.astro","src/pages/about.astro","src/pages/blog/[slug].astro","src/pages/blog/index.astro","src/pages/index.astro","src/pages/talks.astro","src/pages/works.astro","src/styles/site.css","src/styles/vb.css","tests/home-workspace.test.mjs","tests/site-output.test.mjs"]
 
-## 次の作業
+## Evidence
 
-- 作者設定と両ブランチ・PRの現行履歴の修正は完了。履歴更新後も旧SHAへの直接アクセスなどのGitHub側の保存情報については完全な消去を保証しない。
-- 復旧が必要な場合は`.git/identity-backup.RUm65W/before.bundle`から別名のローカルブランチへ旧履歴を取り出して比較する。リモートの再更新は現在のSHAを確認して別途判断する。復旧用bundleとGitのreflogには旧情報を残している。
-- 次の1手: 手元のブラウザで、背面フォームのタイトルバーからのドラッグ、枠外までの移動、ボタンを離した後の停止、前面化・スクロール後の位置保持、閉じる操作を確認する。
-- PR #1の動作確認項目を手元で確認する。実データへの差し替えと公開設定は未完了。Markdown本文の表示は段落と第2階層見出しのみ対応する。
+- 確認済み: 元部品のReactソース・Tailwind CSS・MITライセンスを元commitから読み込んだ。
+- 確認済み: Astro公式のReact連携と名前付き差し込み領域の仕様を確認した。
+- 確認済み: Node.js24.16.0でpnpm check（35ファイル、エラー・警告・ヒント0件）、pnpm build（8ページ）、pnpm test（9件）が成功した。
+- 自動検証: HOMEの無効な閉じるボタン、4方向の子フォーム配置、再選択・前面化、記事表示、閉じた後の入力位置復帰、ドラッグの開始・停止・中断、画面縮小後の位置補正、修飾キー付きリンク操作を確認した。
+- 接続検証: 生成したHOMEのHTMLにReactを接続し、AstroのABOUT・WORKS本文とMarkdown記事を子フォームで開けた。HTMLの不一致エラーなし。HOMEだけがReactを起動し、他の7ページに起動用スクリプトがないことを確認した。
+- 検証コピーのsrc・public・tests、package.json・pnpm-lock.yaml・astro.config.mjs・tsconfig.jsonは作業先と一致する。git diff --checkも成功。
+- 確認済み: pnpm install --frozen-lockfile --offlineで再現性を確認し、配布用のMITライセンスもdist/licenses/legacy-react-form.txtへ出力された。
+- ビルド時に依存パッケージzodのコメント注釈に関する警告が出るが、ビルドは成功する。miseの設定追跡用ファイルへの書き込み警告も実行環境によるもので、検査結果とは分ける。
+- 実ブラウザ検証: 未実施。ローカルURLのブラウザ操作が管理ポリシーにより禁止されており、別経路では試さない。
+- 依存関係はリリース7日制限（2026-09-16T00:00:00Z）で解決し、pnpmに固定する。
 
-- `src/content/profile.ts`、`src/content/works.ts`、`src/content/talks.ts`と`src/content/blog/`のプレースホルダーを実データへ置き換える。
-- GitHubPagesなど公開先を決め、SPAの直接URLアクセスに対応する設定を追加する。
+## Session
+
+- 作業先: /Users/kokoro036/work/wabi.me 。現在のbranch: feature/initial-site、upstream: origin/feature/initial-site。移行差分のcommit・pushを準備中。
+- PR #1: https://github.com/wabi1318/wabi.me/pull/1 。baseはmain、headはfeature/initial-site。更新前のremote commitは398c68e4b1add76696c21f329575908ba1e0a0e5。feature/astro-reactは同じ更新前commitを指すローカルブランチとして残す。
+- 元リポジトリのnode_modules更新は権限昇格後も拒否されたため再試行しない。検証用コピー: /private/tmp/wabi-me-astro-react.uVuzfM 。
+- Node.js24.16.0、pnpm9.13.0を使用。Node22.15.0では依存関係の要求を満たさない。
+- 取り下げたWeb Components試作は /private/tmp/wabi-me-astro-validation.S39ser と /private/tmp/legacy-web-components.9Gd6aN/repo に保存している。GitHub fork wabi1318/legacy-web-componentsへ試作コードは未反映。
+- サイトに残っていた未使用の試作tgzは /private/tmp/wabi-native-vendor.tmIneJ/wabi1318-legacy-web-components-0.1.0.tgz へ退避した。サイトの依存関係から外しており、必要なら復元できる。
+- 過去の作者修正: wabi <118988588+wabi1318@users.noreply.github.com>へ統一済み。復旧用bundleは.git/identity-backup.RUm65W/before.bundle（非公開）に保持。今回は作者履歴を操作しない。
+
+## Next step
+
+- 次の1手: 移行差分をcommitし、remote refを再確認してorigin/feature/initial-siteへpushする。PR本文を確認後、新構成に合わせて更新する。
+- 公開先は既存のwabi1318/wabi.me。remote更新が競合した場合は停止し、force-pushやmainへのpushに切り替えない。復旧が必要なら追加commitで戻す。
+- 続いてユーザー端末で依存関係を更新し、HOMEの子フォーム操作と見た目を確認する。下記は /Users/kokoro036/work/wabi.me で実行する。
+
+```sh
+mise x node@24.16.0 -- corepack pnpm install --frozen-lockfile
+mise x node@24.16.0 -- corepack pnpm dev
+```
+
+- 合格条件: HOMEの閉じるボタンが無効、各メニューから子フォームが開く、タイトルバーから移動できる、同じフォームは増殖せず前面に出る、子フォームだけ閉じられる。ABOUT・記事の直接URLも確認する。
+- Nodeの依存更新を無理に回避する設定は追加しない。元のnode_modules・distはこの実行環境から更新していないため、既存の出力を今回の実装結果として扱わない。
+- 提案コミットメッセージ: ページを静的生成し既存UIを再利用するためAstroへ移行する
+- 復旧は移行前のfeature/initial-siteとの比較から行い、未コミットの移行差分を確認なしに破棄しない。
+- 依存関係の再インストールと手元ブラウザ確認、公開先の決定は保留。

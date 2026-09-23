@@ -1,6 +1,7 @@
 node_modules/
 .pnpm-store/
 .vite-cache/
+.astro/
 dist/
 *.tsbuildinfo
 .DS_Store

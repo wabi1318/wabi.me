@@ -1,0 +1,7 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro'
+import PostList from '../../components/PostList.astro'
+import { getPosts } from '../../content/posts'
+const posts = await getPosts()
+---
+<SiteLayout title="wabi.me - Blog"><h1 class="page-title">記事一覧</h1><PostList posts={posts} /></SiteLayout>
